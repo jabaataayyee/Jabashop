@@ -1,767 +1,98 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="om">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jabaa Shop - Platformii Barnoota Digitaalaa #1</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="stylesheet" href="style.css">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
-        
-        :root {
-            --bg-dark: #030407;
-            --accent-teal: #00d2b4;
-            --glass-bg: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --text-light: #ffffff;
-            --font-sans: "Poppins", sans-serif;
-            --radius-xl: 24px;
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jabaa Shop</title>
+  <style>
+    /* GLOBAL STYLES */
+    body { font-family: Arial, sans-serif; margin:0; background:#f9fafb; color:#111; }
 
-        body {
-            background-color: var(--bg-dark);
-            color: var(--text-light);
-            font-family: var(--font-sans);
-            margin: 0;
-            overflow-x: hidden;
-            line-height: 1.6;
-        }
+    /* HEADER */
+    .header { display:flex; justify-content:space-between; align-items:center; padding:1rem 2rem; background:#fff; box-shadow:0 2px 5px rgba(0,0,0,0.1); position:sticky; top:0; z-index:100; }
+    .logo { font-weight:bold; font-size:1.5rem; color:#f97316; }
+    .search-bar input { padding:0.5rem 1rem; border-radius:8px; border:1px solid #ddd; }
+    .header-icons a { margin-left:1rem; text-decoration:none; color:#111; font-weight:bold; }
 
-        .glass-nav {
-            background: rgba(3, 4, 7, 0.7);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--glass-border);
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 100;
-        }
+    /* HERO SECTION */
+    .hero { background:#fff; text-align:center; padding:4rem 2rem; }
+    .hero h1 { font-size:2.5rem; margin-bottom:1rem; }
+    .hero p { font-size:1.1rem; margin-bottom:2rem; }
+    .cta-button { background:#f97316; color:#fff; padding:0.75rem 1.5rem; border-radius:12px; text-decoration:none; font-weight:bold; }
 
-        .card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--glass-border);
-            border-radius: 16px;
-            transition: var(--transition);
-        }
+    /* PRODUCTS GRID */
+    .products-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:1.5rem; padding:2rem; }
+    .product-card { background:#fff; border-radius:20px; box-shadow:0 4px 8px rgba(0,0,0,0.08); padding:1rem; text-align:center; transition: transform 0.2s, box-shadow 0.2s; }
+    .product-card:hover { transform: translateY(-5px); box-shadow:0 6px 12px rgba(0,0,0,0.15); }
+    .product-card img { width:100%; border-radius:12px; margin-bottom:0.75rem; }
+    .buy-button { background:#f97316; color:#fff; border:none; border-radius:12px; padding:0.5rem 1rem; cursor:pointer; font-weight:bold; }
 
-        .card:hover {
-            border-color: rgba(0, 210, 180, 0.3);
-            transform: translateY(-4px);
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .btn-primary {
-            background: var(--accent-teal);
-            color: #000;
-            font-weight: 700;
-            border: none;
-            border-radius: 12px;
-            padding: 10px 20px;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-size: 11px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-        }
-
-        .btn-primary:hover {
-            filter: brightness(1.1);
-            box-shadow: 0 0 20px rgba(0, 210, 180, 0.3);
-        }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.05);
-            color: white;
-            border: 1px solid var(--glass-border);
-            border-radius: 12px;
-            padding: 10px 20px;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-size: 11px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-        }
-
-        .search-bar {
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--glass-border);
-            border-radius: 12px;
-            padding: 8px 16px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .search-bar input {
-            background: transparent;
-            border: none;
-            outline: none;
-            color: white;
-            font-size: 12px;
-            width: 100%;
-        }
-
-        .category-pill {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--glass-border);
-            border-radius: 10px;
-            padding: 6px 16px;
-            color: #94a3b8;
-            font-size: 11px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            white-space: nowrap;
-        }
-
-        .category-pill.active {
-            background: rgba(255, 255, 255, 0.08);
-            color: var(--accent-teal);
-            border-color: rgba(0, 210, 180, 0.3);
-        }
-
-        .floating-3d {
-            animation: float 4s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
-        }
-
-        /* 3D Header Background & Particles */
-        .header-text-shadow {
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-        }
-
-        .mobile-menu-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(3, 4, 7, 0.95);
-            backdrop-filter: blur(20px);
-            z-index: 200;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 20px;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s;
-        }
-
-        .mobile-menu-overlay.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-        .faq-answer {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.5s cubic-bezier(0, 1, 0, 1), opacity 0.3s ease;
-            opacity: 0;
-        }
-
-        .faq-answer.active {
-            max-height: 1000px;
-            transition: max-height 1s ease-in-out;
-            opacity: 1;
-        }
-    </style>
+    /* FOOTER */
+    .footer { background:#fff; text-align:center; padding:2rem; margin-top:2rem; font-size:0.9rem; color:#555; }
+    .footer nav a { margin:0 0.5rem; color:#f97316; text-decoration:none; font-weight:bold; }
+  </style>
 </head>
-<body class="selection:bg-[#00d2b4]/30">
-    <!-- Global Edge Glows -->
-    <div class="global-edge-glows">
-        <div class="edge-glow glow-tl"></div>
-        <div class="edge-glow glow-tr"></div>
-        <div class="edge-glow glow-bl"></div>
-        <div class="edge-glow glow-br"></div>
-        <div class="edge-particles"></div>
-        <div class="edge-waves"></div>
-        <div class="edge-scan-line"></div>
+<body>
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="logo">Jabaa Shop</div>
+    <div class="search-bar"><input type="text" placeholder="Kitaaba barbaadi..."></div>
+    <div class="header-icons">
+      <a href="cart.html">🛒</a>
+      <a href="login.html">Seeni</a>
     </div>
-    <nav class="glass-nav">
-        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
-            <!-- Logo -->
-            <div class="flex items-center gap-2 cursor-pointer shrink-0" onclick="window.location.href='index.html'">
-                <div class="w-8 h-8 bg-[#00d2b4] rounded-lg flex items-center justify-center shadow-lg shadow-[#00d2b4]/20 floating-3d depth-effect">
-                    <i data-lucide="shopping-bag" class="w-4 h-4 text-slate-950"></i>
-                </div>
-                <h1 class="hidden sm:block text-sm font-bold tracking-tight text-white uppercase">Jabaa Shop</h1>
-            </div>
+  </header>
 
-            <!-- Search Bar (Center) -->
-            <div class="flex-1 max-w-md">
-                <div class="search-bar w-full">
-                    <i data-lucide="search" class="w-3.5 h-3.5 text-slate-500"></i>
-                    <input type="text" id="search-input" placeholder="Barbaadi..." class="text-[11px]">
-                </div>
-            </div>
+  <!-- HERO SECTION -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Kitaabota Jabaa Argadhu</h1>
+      <p>Ogummaa keessan gara fuulduraatti guddisuuf</p>
+      <a href="#products" class="cta-button">Kitaabota Ilaali</a>
+    </div>
+  </section>
 
-            <!-- Right Actions -->
-            <div class="flex items-center gap-2 shrink-0">
-                <a href="dashboard.html" class="w-8 h-8 flex items-center justify-center bg-white/5 rounded-lg hover:bg-white/10 transition-all border border-white/5" title="Kitaabota Koo">
-                    <i data-lucide="library" class="w-4 h-4 text-slate-400"></i>
-                </a>
-                <a href="dashboard.html?tab=transactions" class="w-8 h-8 flex items-center justify-center bg-white/5 rounded-lg hover:bg-white/10 transition-all border border-white/5" title="Kaffaltiiwwan">
-                    <i data-lucide="history" class="w-4 h-4 text-slate-400"></i>
-                </a>
-                
-                <div id="user-links" class="hidden flex items-center gap-2">
-                    <a href="profile.html" class="w-8 h-8 flex items-center justify-center bg-white/5 rounded-lg border border-white/5 overflow-hidden hover:border-[#00d2b4]/30 transition-all">
-                        <img id="nav-avatar-img" src="" class="w-full h-full object-cover hidden" referrerPolicy="no-referrer">
-                        <i id="nav-avatar-placeholder" data-lucide="user" class="w-4 h-4 text-slate-400"></i>
-                    </a>
-                </div>
+  <!-- PRODUCTS GRID -->
+  <section id="products" class="products-grid"></section>
 
-                <button onclick="toggleMobileMenu()" class="w-8 h-8 flex items-center justify-center bg-white/5 rounded-lg border border-white/5 text-slate-400 hover:text-white transition-all">
-                    <i data-lucide="menu" class="w-4 h-4"></i>
-                </button>
-            </div>
-        </div>
+  <!-- FOOTER -->
+  <footer class="footer">
+    <p>© 2026 Jabaa Shop. Mirgi hunduu seeraan kan eegame dha.</p>
+    <nav>
+      <a href="faq.html">FAQ</a>
+      <a href="security.html">Nageenya</a>
+      <a href="support.html">Deeggarsa</a>
+      <a href="about.html">Waa'ee Keenya</a>
     </nav>
+  </footer>
 
-    <!-- Mobile Menu Overlay -->
-    <div id="mobile-menu" class="mobile-menu-overlay">
-        <button onclick="toggleMobileMenu()" class="absolute top-6 right-6 w-10 h-10 flex items-center justify-center bg-white/5 rounded-lg border border-white/10 text-slate-400 hover:text-white transition-all">
-            <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-        <div class="flex flex-col items-center gap-8 w-full max-w-xs px-6">
-            <div class="flex flex-col items-center gap-2 mb-4">
-                <div class="w-12 h-12 bg-[#00d2b4] rounded-xl flex items-center justify-center shadow-lg shadow-[#00d2b4]/20 mb-2 floating-3d">
-                    <i data-lucide="shopping-bag" class="w-6 h-6 text-slate-950"></i>
-                </div>
-                <h2 class="text-sm font-bold text-white uppercase tracking-tight">Jabaa Shop</h2>
-            </div>
+  <!-- DYNAMIC JS -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const productsGrid = document.getElementById("products");
 
-            <div id="mobile-auth-links" class="flex flex-col w-full gap-3 mt-4">
-                <a href="login.html" onclick="toggleMobileMenu()" class="w-full py-3 px-4 rounded-xl border border-white/5 text-center text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-white transition-all">Seeni</a>
-                <a href="signup.html" onclick="toggleMobileMenu()" class="btn-primary !h-12 !text-[10px] !w-full">Dabalami</a>
-            </div>
+      // Example: dynamically pull existing ebooks
+      // If your system has JS array or Supabase call, replace this with real data
+      const ebooks = [
+        { title: "Mastering AI", price: "₳ 50", img: "ebooks/example-book.jpg" },
+        { title: "Video Editing Pro", price: "₳ 40", img: "ebooks/example-book2.jpg" },
+        { title: "Online Business", price: "₳ 60", img: "ebooks/example-book3.jpg" }
+      ];
 
-            <div id="mobile-user-links" class="hidden flex flex-col w-full gap-3 mt-4">
-                <a href="dashboard.html" onclick="toggleMobileMenu()" class="w-full py-3 px-4 rounded-xl bg-white/2 text-center text-[10px] font-bold uppercase tracking-widest text-white hover:bg-white/5 transition-all">Kitaabota Koo</a>
-                <a href="dashboard.html?tab=transactions" onclick="toggleMobileMenu()" class="w-full py-3 px-4 rounded-xl bg-white/2 text-center text-[10px] font-bold uppercase tracking-widest text-white hover:bg-white/5 transition-all">Kaffaltiiwwan</a>
-                <a href="profile.html" onclick="toggleMobileMenu()" class="w-full py-3 px-4 rounded-xl bg-white/2 text-center text-[10px] font-bold uppercase tracking-widest text-white hover:bg-white/5 transition-all">Proofayilii</a>
-                <button onclick="logout()" class="w-full py-3 px-4 rounded-xl bg-rose-500/5 text-rose-500 text-[10px] font-bold uppercase tracking-widest border border-rose-500/10 hover:bg-rose-500/10 transition-all">Ba'i</button>
-            </div>
-        </div>
-    </div>
+      ebooks.forEach(ebook => {
+        const card = document.createElement("div");
+        card.classList.add("product-card");
+        card.innerHTML = `
+          <img src="${ebook.img}" alt="${ebook.title}">
+          <h3>${ebook.title}</h3>
+          <p>${ebook.price}</p>
+          <button class="buy-button">Bitadhu</button>
+        `;
+        productsGrid.appendChild(card);
+      });
+    });
+  </script>
 
-    <!-- Hero Section -->
-    <header class="relative pt-24 pb-6 px-4 overflow-hidden">
-        <div class="max-w-7xl mx-auto">
-            <div class="premium-glass rounded-2xl p-8 md:p-12 flex flex-col items-center text-center relative overflow-hidden">
-                <div class="premium-glass-shine"></div>
-                <!-- 3D Background Layer -->
-                <div class="header-3d-container">
-                    <div class="energy-waves"></div>
-                    <div class="tech-grid"></div>
-                    <div class="scan-line"></div>
-                    <div class="pulse-ring"></div>
-                    <div class="pulse-ring" style="animation-delay: 2s; border-color: rgba(6, 182, 212, 0.5); box-shadow: 0 0 20px rgba(6, 182, 212, 0.3) inset, 0 0 20px rgba(6, 182, 212, 0.3);"></div>
-                    
-                    <div class="ambient-glow-1"></div>
-                    <div class="ambient-glow-2"></div>
-                    <div class="ambient-glow-3"></div>
-                    <div class="ambient-glow-4"></div>
-                    <div class="glass-overlay"></div>
-                    
-                    <div class="header-reflection"></div>
-                    <div class="light-sweep"></div>
-                    <div class="light-beam"></div>
-                    <div class="lens-flare"></div>
-                    <div class="moving-light"></div>
-                    <div class="neon-highlight"></div>
-                    <div class="neon-highlight" style="animation-delay: 5s; top: auto; bottom: 0;"></div>
-                    
-                    <!-- Particles -->
-                    <div id="particles-container" style="position: absolute; inset: 0; z-index: 3; pointer-events: none;"></div>
-                    <div id="bokeh-container" style="position: absolute; inset: 0; z-index: 3; pointer-events: none;"></div>
-                </div>
-                <!-- Original Gradient Overlay (Subtle) -->
-                <div class="absolute inset-0 bg-gradient-to-br from-blue-500/[0.05] to-transparent pointer-events-none z-1"></div>
-                
-                <div class="max-w-xl relative z-50" style="transform: translateZ(10px);">
-                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/5 border border-blue-500/10 mb-6">
-                        <span class="w-1 h-1 rounded-full bg-blue-500 animate-pulse"></span>
-                        <span class="text-[8px] font-bold text-blue-400/80 uppercase tracking-[0.2em]">Dhaloota Technology</span>
-                    </div>
-                    <h2 class="text-2xl md:text-3xl font-bold mb-4 text-white leading-tight uppercase tracking-tight header-text-shadow">
-                        Kayyoon keenya <span class="text-blue-400">Dhaloota Technology</span> uumudha
-                    </h2>
-                    <p class="text-slate-200 text-[10px] md:text-[11px] mb-8 font-medium leading-relaxed max-w-md mx-auto header-text-shadow">
-                        Barnoota technology fi ogummaa gara fuulduraatti si geessu argadhu. Ogummaa keessan guddisuun dhaloota ijaaraa.
-                    </p>
-                    <div class="flex justify-center">
-                        <a href="#books" class="btn-primary !px-8 !h-11 !text-[10px]">
-                            Barachuu Jalqabi
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <!-- Category Row -->
-    <section id="categories" class="px-4 py-6 max-w-7xl mx-auto overflow-hidden reveal">
-        <div class="flex items-center gap-2 overflow-x-auto pb-2 no-scrollbar">
-            <button onclick="renderBooks(allBooks); updateActivePill(this)" class="category-pill active flex items-center gap-2 depth-effect">
-                <i data-lucide="layout-grid" class="w-3 h-3 icon-hunda"></i>
-                Hunda
-            </button>
-            <button onclick="filterByCategory('AI'); updateActivePill(this)" class="category-pill flex items-center gap-2 depth-effect">
-                <i data-lucide="cpu" class="w-3 h-3 icon-ai"></i>
-                AI
-            </button>
-            <button onclick="filterByCategory('Video Editing'); updateActivePill(this)" class="category-pill flex items-center gap-2 depth-effect">
-                <i data-lucide="video" class="w-3 h-3 icon-video"></i>
-                Video
-            </button>
-            <button onclick="filterByCategory('Technology'); updateActivePill(this)" class="category-pill flex items-center gap-2 depth-effect">
-                <i data-lucide="monitor" class="w-3 h-3 icon-tech"></i>
-                Tech
-            </button>
-            <button onclick="filterByCategory('Online Business'); updateActivePill(this)" class="category-pill flex items-center gap-2 depth-effect">
-                <i data-lucide="briefcase" class="w-3 h-3 icon-business"></i>
-                Business
-            </button>
-            <button onclick="filterByCategory('Graphic Design'); updateActivePill(this)" class="category-pill flex items-center gap-2 depth-effect">
-                <i data-lucide="palette" class="w-3 h-3 icon-image"></i>
-                Design
-            </button>
-        </div>
-    </section>
-
-    <!-- Product Grid Section -->
-    <main id="books" class="px-4 md:px-6 py-8 md:py-12 max-w-7xl mx-auto reveal">
-        <div class="flex items-center justify-between mb-8">
-            <div>
-                <h3 class="text-sm font-bold text-white uppercase tracking-tight">Kitaabota Filataman</h3>
-                <p class="text-[8px] text-slate-500 uppercase tracking-[0.2em] mt-1 font-bold">Filannoo keenya kan dhiyeenyaa</p>
-            </div>
-            <a href="dashboard.html" class="text-teal-400 text-[9px] font-bold uppercase tracking-widest hover:underline">Kitaabota Koo</a>
-        </div>
-        
-        <div id="books-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-            <!-- Loading State -->
-            <div class="col-span-full flex flex-col items-center justify-center py-20">
-                <div class="w-8 h-8 border-4 border-teal-500/20 border-t-teal-500 rounded-full animate-spin mb-4"></div>
-                <p class="text-slate-500 text-[10px] font-bold uppercase tracking-widest">Fe'amaa jira...</p>
-            </div>
-        </div>
-
-        <!-- FAQ Section -->
-        <section id="faq-section" class="px-4 py-16 max-w-2xl mx-auto">
-            <div class="text-center mb-12">
-                <span class="text-teal-400 font-bold text-[8px] uppercase tracking-[0.3em] mb-2 block">Giddu-gala Deeggarsaa</span>
-                <h3 class="text-sm font-bold text-white uppercase tracking-tight">Gaaffiiwwan Yeroo Hedduu</h3>
-            </div>
-            
-            <div class="space-y-3">
-                <!-- FAQ Item 1 -->
-                <div class="faq-item group">
-                    <button onclick="toggleFAQ(this)" class="w-full flex items-center justify-between p-4 card text-left">
-                        <span class="text-[10px] font-bold uppercase tracking-wider text-white pr-6">Akkaamitti kitaaba bitachuu danda'a?</span>
-                        <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-500 transition-transform duration-300"></i>
-                    </button>
-                    <div class="faq-answer px-4 py-4 text-slate-400 text-[10px] font-medium leading-relaxed border-x border-b border-white/5 rounded-b-xl -mt-2 bg-white/[0.01] backdrop-blur-sm">
-                        Duraan galmaa'uu qabdu. Sana booda kitaaba barbaaddan filattanii "Bitadhu" kan jedhu cuqaasuun kaffaltii Telebirr ykn Baankii raawwattanii nagahee (receipt) upload gootu. Admin erga mirkaneessee booda buufachuu dandeessu.
-                    </div>
-                </div>
-
-                <!-- FAQ Item 2 -->
-                <div class="faq-item group">
-                    <button onclick="toggleFAQ(this)" class="w-full flex items-center justify-between p-4 card text-left">
-                        <span class="text-[10px] font-bold uppercase tracking-wider text-white pr-6">Nagaheen koo yoom mirkanaa'a?</span>
-                        <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-500 transition-transform duration-300"></i>
-                    </button>
-                    <div class="faq-answer px-4 py-4 text-slate-400 text-[10px] font-medium leading-relaxed border-x border-b border-white/5 rounded-b-xl -mt-2 bg-white/[0.01] backdrop-blur-sm">
-                        Yeroo baay'ee daqiiqaa 15 hanga sa'aatii 1 keessatti mirkanaa'a. Garuu yeroo tokko tokko hanga sa'aatii 24 fudhachuu danda'a.
-                    </div>
-                </div>
-
-                <!-- FAQ Item 3 -->
-                <div class="faq-item group">
-                    <button onclick="toggleFAQ(this)" class="w-full flex items-center justify-between p-4 card text-left">
-                        <span class="text-[10px] font-bold uppercase tracking-wider text-white pr-6">Kitaaba buufachuu dadhabnaan maal gochuu qaba?</span>
-                        <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-500 transition-transform duration-300"></i>
-                    </button>
-                    <div class="faq-answer px-4 py-4 text-slate-400 text-[10px] font-medium leading-relaxed border-x border-b border-white/5 rounded-b-xl -mt-2 bg-white/[0.01] backdrop-blur-sm">
-                        Deeggarsa keenya quunnamuun gargaarsa argachuu dandeessu. Telegram ykn Email keenyaan nu quunnamaa.
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Preview Modal -->
-        <div id="preview-modal" class="fixed inset-0 bg-slate-950/95 backdrop-blur-3xl hidden z-[100] items-center justify-center p-6">
-            <div class="bg-slate-900/40 p-8 rounded-3xl w-full max-w-4xl border border-white/5 relative overflow-hidden animate-fade-in shadow-2xl backdrop-blur-2xl">
-                <div class="flex justify-between items-start mb-8">
-                    <div>
-                        <span class="text-teal-400 font-bold text-[8px] uppercase tracking-[0.3em] mb-1 block">Ilaalcha Kitaabaa</span>
-                        <h3 id="preview-title" class="text-xl font-bold text-white uppercase tracking-tight"></h3>
-                    </div>
-                    <button onclick="closePreviewModal()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 hover:bg-white/10 transition-all border border-white/5">
-                        <i data-lucide="x" class="w-5 h-5 text-slate-400"></i>
-                    </button>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div class="rounded-2xl overflow-hidden border border-white/5 shadow-2xl aspect-[3/4]">
-                        <img id="preview-image" src="" class="w-full h-full object-cover" referrerPolicy="no-referrer">
-                    </div>
-                    <div class="flex flex-col justify-center space-y-6">
-                        <div>
-                            <p class="text-[9px] font-bold uppercase tracking-[0.2em] text-teal-400/80 mb-3">Ibsa Gabaabaa</p>
-                            <p id="preview-description" class="text-slate-400 leading-relaxed text-[11px] font-medium"></p>
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <p id="preview-price" class="text-2xl font-bold text-white"></p>
-                            <span class="text-[8px] font-bold uppercase tracking-[0.2em] text-slate-500">Gatii Guutuu</span>
-                        </div>
-                        <div id="preview-action-container" class="pt-4 flex flex-col gap-3">
-                            <!-- Preview PDF button will be here -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <footer class="bg-slate-950 border-t border-white/5 py-16 px-6 relative overflow-hidden">
-        <div class="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_0%,rgba(45,212,191,0.03),transparent_50%)]"></div>
-        <div class="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-12 relative z-10">
-            <div class="col-span-1 sm:col-span-2 reveal">
-                <div class="flex items-center gap-3 mb-6">
-                    <div class="w-10 h-10 bg-teal-500 rounded-xl flex items-center justify-center shadow-lg shadow-teal-500/20 floating-3d neon-border">
-                        <i data-lucide="shopping-bag" class="w-5 h-5 text-slate-950"></i>
-                    </div>
-                    <h1 class="text-lg font-bold text-white tracking-tight uppercase neon-text">Jabaa Shop</h1>
-                </div>
-                <p class="text-slate-500 text-[11px] max-w-sm mb-8 leading-relaxed font-medium">Bakka dhumaa ogummaa diijitaalaatiif. Meeshaalee fi beekumsa addunyaa ammayyaa keessatti milkaa'uuf isin barbaachisu ni dhiyeessina.</p>
-            </div>
-            <div>
-                <h5 class="font-bold mb-6 text-white uppercase tracking-widest text-[10px]">Liinkiiwwan</h5>
-                <ul class="space-y-3">
-                    <li><a href="about.html" class="nav-link">Waa'ee Keenya</a></li>
-                    <li><a href="services.html" class="nav-link">Tajaajilaa</a></li>
-                    <li><a href="security.html" class="nav-link">Nageenya</a></li>
-                </ul>
-            </div>
-            <div>
-                <h5 class="font-bold mb-6 text-white uppercase tracking-widest text-[10px]">Deeggarsa</h5>
-                <ul class="space-y-3">
-                    <li><a href="support.html" class="nav-link">Deeggarsa</a></li>
-                    <li><a href="#faq-section" class="nav-link">Gaaffiiwwan</a></li>
-                    <li><a href="https://t.me/JabaaShop" target="_blank" class="nav-link">Hawaasa</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="mt-16 pt-8 border-t border-white/5 text-center">
-            <p class="text-slate-600 text-[9px] font-bold uppercase tracking-[0.3em]">&copy; 2026 Jabaa Shop. Mirgi hunduu seeraan kan eegame dha.</p>
-        </div>
-    </footer>
-
-    <script type="module" src="app.js"></script>
-    <script type="module">
-        lucide.createIcons();
-
-        let allBooks = [];
-        let userReceipts = [];
-        let currentUser = null;
-
-        async function loadFeaturedBooks() {
-            const { data: { user } } = await supabaseClient.auth.getUser();
-            currentUser = user;
-            const grid = document.getElementById('books-grid');
-            
-            // Show skeletons while loading
-            showSkeleton('books-grid', 8, 'card');
-
-            if (!user) {
-                grid.innerHTML = `
-                    <div class="col-span-full text-center py-16 card animate-fade-in-up border-teal-500/10 bg-slate-900/40">
-                        <div class="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center mx-auto mb-6 border border-white/10">
-                            <i data-lucide="lock" class="w-6 h-6 text-slate-400"></i>
-                        </div>
-                        <h4 class="text-lg font-semibold mb-3 text-white uppercase tracking-tight">Kitaabota Ilaaluuf Seenuu qabdu</h4>
-                        <p class="text-slate-400 mb-8 max-w-xs mx-auto font-normal text-xs">Kitaabota piriimiyamii keenya ilaaluuf duraan galmaa'uu ykn seenuu qabdu.</p>
-                        <div class="flex justify-center gap-4">
-                            <a href="login.html" class="btn-primary !px-8 !py-2.5 !text-[10px]">Seeni</a>
-                            <a href="signup.html" class="btn-secondary !px-8 !py-2.5 !text-[10px]">Galmaa'i</a>
-                        </div>
-                    </div>
-                `;
-                lucide.createIcons();
-                return;
-            }
-
-            const { data: books, error } = await supabaseClient.from('books').select('*');
-            const { data: receipts } = await supabaseClient.from('receipts').select('*').eq('user_id', user.id);
-            
-            if (error) {
-                grid.innerHTML = `<p class="col-span-full text-center py-12 text-teal-400 font-bold">Dogoggora Database: ${error.message}</p>`;
-                return;
-            }
-
-            allBooks = books || [];
-            userReceipts = receipts || [];
-            
-            // Update library count
-            const approvedCount = userReceipts.filter(r => r.status === 'approved').length;
-            const countBadge = document.getElementById('library-count');
-            if (countBadge) countBadge.innerText = approvedCount;
-
-            renderBooks(allBooks);
-            handleUrlSearch();
-        }
-
-        function renderBooks(booksToRender) {
-            const grid = document.getElementById('books-grid');
-
-            if (!booksToRender || booksToRender.length === 0) {
-                grid.innerHTML = `<p class="col-span-full text-center py-24 text-slate-600 font-bold uppercase tracking-[0.3em] text-[10px]">Kitaabonni ammaaf hin jiran.</p>`;
-                return;
-            }
-
-            grid.innerHTML = '';
-            booksToRender.forEach(book => {
-                const receipt = userReceipts?.find(r => r.book_id === book.id);
-                
-                let actionButton = `
-                    <a href="dashboard.html" class="btn-primary flex-1 !h-9 !text-[9px]">
-                        Bitadhu
-                    </a>`;
-                
-                if (receipt && receipt.status === 'approved') {
-                    actionButton = `
-                        <a href="${book.pdf_url}" target="_blank" class="btn-secondary flex-1 !h-9 !text-[9px] !bg-emerald-500/10 !text-emerald-400 !border-emerald-500/20">
-                            Buufadhu
-                        </a>`;
-                }
-
-                grid.innerHTML += `
-                    <div class="card p-2 flex flex-col group animate-fade-in-up">
-                        <div class="relative overflow-hidden rounded-xl mb-3 aspect-[3/4] bg-slate-950">
-                            <img src="${book.cover_url}" alt="${book.title}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" referrerPolicy="no-referrer">
-                            <div class="absolute top-2.5 right-2.5 z-10">
-                                <span class="px-2.5 py-1 rounded-lg bg-slate-950/80 backdrop-blur-md border border-white/10 text-[9px] font-bold text-white tracking-widest">
-                                    ${book.price} ETB
-                                </span>
-                            </div>
-                        </div>
-                        <div class="flex-1 flex flex-col px-1 pb-1">
-                            <div class="mb-4">
-                                <span class="text-[7px] font-bold text-teal-400 uppercase tracking-[0.3em] mb-1 block">${book.category || 'Technology'}</span>
-                                <h4 class="text-xs font-bold tracking-tight text-white line-clamp-1 group-hover:text-teal-400 transition-colors uppercase">${book.title}</h4>
-                                <p class="text-[9px] text-slate-500 line-clamp-2 mt-1.5 font-medium leading-relaxed">${book.description || 'Ibsi hin jiru.'}</p>
-                            </div>
-                            <div class="flex gap-2 mt-auto">
-                                <button onclick="openPreviewModal('${book.id}')" class="btn-secondary flex-1 !h-9 !text-[9px]">
-                                    Ilaali
-                                </button>
-                                ${actionButton}
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-            lucide.createIcons();
-        }
-
-        function updateActivePill(btn) {
-            document.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active'));
-            btn.classList.add('active');
-        }
-
-        function filterByCategory(category) {
-            const filtered = allBooks.filter(b => b.category === category);
-            renderBooks(filtered);
-            // Scroll to books section
-            document.getElementById('books').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        // Search functionality
-        document.getElementById('search-input')?.addEventListener('input', (e) => {
-            const term = e.target.value.toLowerCase();
-            const filtered = allBooks.filter(b => 
-                b.title.toLowerCase().includes(term) || 
-                (b.description && b.description.toLowerCase().includes(term))
-            );
-            renderBooks(filtered);
-        });
-
-        // Handle URL search query
-        function handleUrlSearch() {
-            const params = new URLSearchParams(window.location.search);
-            const query = params.get('q');
-            if (query) {
-                const searchInput = document.getElementById('search-input');
-                if (searchInput) {
-                    searchInput.value = query;
-                    const filtered = allBooks.filter(b => 
-                        b.title.toLowerCase().includes(query.toLowerCase()) || 
-                        (b.description && b.description.toLowerCase().includes(query.toLowerCase()))
-                    );
-                    renderBooks(filtered);
-                    document.getElementById('books').scrollIntoView({ behavior: 'smooth' });
-                }
-            }
-        }
-
-        async function updateNav() {
-            const { data: { user } } = await supabaseClient.auth.getUser();
-            const mobileAuth = document.getElementById('mobile-auth-links');
-            const mobileUser = document.getElementById('mobile-user-links');
-            const desktopUser = document.getElementById('user-links');
-
-            if (user) {
-                if (mobileAuth) mobileAuth.classList.add('hidden');
-                if (mobileUser) mobileUser.classList.remove('hidden');
-                if (desktopUser) desktopUser.classList.remove('hidden');
-                
-                // Load avatar
-                const avatarUrl = user.user_metadata?.avatar_url;
-                if (avatarUrl) {
-                    const navImg = document.getElementById('nav-avatar-img');
-                    const navPlaceholder = document.getElementById('nav-avatar-placeholder');
-                    if (navImg && navPlaceholder) {
-                        navImg.src = avatarUrl;
-                        navImg.classList.remove('hidden');
-                        navPlaceholder.classList.add('hidden');
-                    }
-                }
-            } else {
-                if (mobileAuth) mobileAuth.classList.remove('hidden');
-                if (mobileUser) mobileUser.classList.add('hidden');
-                if (desktopUser) desktopUser.classList.add('hidden');
-            }
-        }
-
-        async function openPreviewModal(bookId) {
-            const { data: book, error } = await supabaseClient.from('books').select('*').eq('id', bookId).single();
-            if (error) {
-                showToast('Dogoggora kitaaba fiduu: ' + error.message, 'error');
-                return;
-            }
-            const modal = document.getElementById('preview-modal');
-            
-            document.getElementById('preview-title').innerText = book.title;
-            document.getElementById('preview-description').innerText = book.description || 'Ibsi kitaaba kanaa ammaaf hin jiru.';
-            document.getElementById('preview-image').src = book.cover_url;
-            document.getElementById('preview-price').innerText = book.price + ' ETB';
-            
-            const actionContainer = document.getElementById('preview-action-container');
-            if (book.preview_url) {
-                actionContainer.innerHTML = `
-                    <a href="${book.preview_url}" target="_blank" class="btn-primary !py-4 w-full">
-                        <i data-lucide="eye" class="w-4 h-4 mr-2"></i> PDF Ilaali
-                    </a>
-                `;
-            } else {
-                actionContainer.innerHTML = '<p class="text-xs text-slate-400 italic text-center">Dura-ilaalchi PDF hin jiru.</p>';
-            }
-            
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            document.body.style.overflow = 'hidden';
-            lucide.createIcons();
-        }
-
-        function closePreviewModal() {
-            const modal = document.getElementById('preview-modal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-            document.body.style.overflow = 'auto';
-        }
-
-        function toggleFAQ(button) {
-            const answer = button.nextElementSibling;
-            const icon = button.querySelector('[data-lucide="chevron-down"]');
-            const isActive = answer.classList.contains('active');
-            
-            // Close all other answers
-            document.querySelectorAll('.faq-answer').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.faq-item i').forEach(el => el.style.transform = 'rotate(0deg)');
-            
-            if (!isActive) {
-                answer.classList.add('active');
-                icon.style.transform = 'rotate(180deg)';
-            }
-        }
-
-        async function logout() {
-            await supabaseClient.auth.signOut();
-            window.location.reload();
-        }
-
-        function toggleMobileMenu() {
-            document.getElementById('mobile-menu').classList.toggle('active');
-            document.body.style.overflow = document.getElementById('mobile-menu').classList.contains('active') ? 'hidden' : 'auto';
-        }
-
-        window.logout = logout;
-        window.toggleMobileMenu = toggleMobileMenu;
-        window.toggleFAQ = toggleFAQ;
-        window.filterByCategory = filterByCategory;
-        window.updateActivePill = updateActivePill;
-        window.openPreviewModal = openPreviewModal;
-        window.closePreviewModal = closePreviewModal;
-        window.renderBooks = renderBooks;
-
-        loadFeaturedBooks();
-        updateNav();
-    </script>
-    <script type="module">
-        // Particle System
-        function createParticles() {
-            const container = document.getElementById('particles-container');
-            const bokehContainer = document.getElementById('bokeh-container');
-            if (!container || !bokehContainer) return;
-            
-            const count = 20;
-            for (let i = 0; i < count; i++) {
-                const p = document.createElement('div');
-                p.className = 'particle';
-                p.style.left = Math.random() * 100 + '%';
-                p.style.top = Math.random() * 100 + '%';
-                p.style.animationDuration = (Math.random() * 20 + 15) + 's';
-                p.style.animationDelay = Math.random() * 10 + 's';
-                p.style.opacity = Math.random() * 0.15;
-                container.appendChild(p);
-            }
-
-            const bokehCount = 8;
-            for (let i = 0; i < bokehCount; i++) {
-                const b = document.createElement('div');
-                b.className = 'bokeh';
-                b.style.left = Math.random() * 100 + '%';
-                b.style.top = Math.random() * 100 + '%';
-                b.style.animationDuration = (Math.random() * 30 + 20) + 's';
-                b.style.animationDelay = Math.random() * 15 + 's';
-                b.style.width = (Math.random() * 100 + 50) + 'px';
-                b.style.height = b.style.width;
-                bokehContainer.appendChild(b);
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            createParticles();
-        });
-    </script>
 </body>
 </html>
