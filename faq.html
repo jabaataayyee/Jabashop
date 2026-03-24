@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gaaffiiwwan Yeroo Hedduu - Jabaa Shop</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-[#020410] text-slate-200 selection:bg-teal-500/30 font-sans">
+    <!-- Tech Grid Background -->
+    <div class="fixed inset-0 tech-grid -z-10 opacity-20"></div>
+    <div class="fixed inset-0 -z-10 bg-[radial-gradient(circle_at_50%_0%,rgba(0,242,255,0.05),transparent_50%)]"></div>
+    
+    <nav class="fixed w-full z-50 px-4 md:px-6 py-4 transition-all duration-500">
+        <div class="max-w-7xl mx-auto glass-nav px-6 md:px-8 py-4 flex justify-between items-center rounded-[28px] border border-white/10">
+            <div class="flex items-center gap-3 group cursor-pointer" onclick="window.location.href='index.html'">
+                <div class="w-10 h-10 md:w-12 md:h-12 logo-teal-glow rounded-2xl flex items-center justify-center transition-all duration-500 group-hover:rotate-12 group-hover:scale-110">
+                    <i data-lucide="shopping-bag" class="w-6 h-6 md:w-7 md:h-7 text-white"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg md:text-2xl font-black tracking-tighter text-white leading-none uppercase glow-text-teal">Jabaa Shop</h1>
+                    <span class="text-[8px] md:text-[9px] font-black tracking-[0.4em] text-teal-400 uppercase">Giddu-gala Teeknooloojii</span>
+                </div>
+            </div>
+            <a href="index.html" class="btn-secondary !py-2 md:!py-3 !px-4 md:!px-8 !text-[9px] md:!text-[10px]">Gara Manaa</a>
+        </div>
+    </nav>
+
+    <main class="pt-32 md:pt-48 pb-24 px-4 md:px-6 max-w-3xl mx-auto">
+        <div class="text-center mb-10 md:mb-12 animate-fade-in-up">
+            <span class="text-teal-400 font-black text-[8px] md:text-[9px] uppercase tracking-[0.4em] mb-3 block">Giddu-gala Gargaarsaa</span>
+            <h2 class="text-3xl md:text-4xl font-black tracking-tighter text-white uppercase mb-4">Gaaffiiwwan Yeroo Hedduu</h2>
+            <p class="text-sm md:text-base text-slate-400 font-medium leading-relaxed">Gaaffiiwwan isin barbaachisan hundaaf deebii asitti argattu.</p>
+        </div>
+
+        <div class="space-y-4 animate-fade-in-up" style="animation-delay: 0.2s">
+            <div class="bg-[#161b2b]/80 backdrop-blur-xl p-5 md:p-6 rounded-[20px] md:rounded-[28px] border border-white/10 shadow-2xl card-3d">
+                <h3 class="text-sm md:text-base font-black mb-2 uppercase tracking-tight text-teal-400">Akkaamitti kitaaba bitachuu danda'a?</h3>
+                <p class="text-xs md:text-sm text-slate-400 font-medium">Duraan galmaa'uu qabdu. Sana booda kitaaba barbaaddan filattanii "Bitadhu" kan jedhu cuqaasuun kaffaltii Telebirr ykn Baankii raawwattanii nagahee (receipt) upload gootu. Admin erga mirkaneessee booda buufachuu dandeessu.</p>
+            </div>
+
+            <div class="bg-[#161b2b]/80 backdrop-blur-xl p-5 md:p-6 rounded-[20px] md:rounded-[28px] border border-white/10 shadow-2xl card-3d">
+                <h3 class="text-sm md:text-base font-black mb-2 uppercase tracking-tight text-teal-400">Nagaheen koo yoom mirkanaa'a?</h3>
+                <p class="text-xs md:text-sm text-slate-400 font-medium">Yeroo baay'ee daqiiqaa 15 hanga sa'aatii 1 keessatti mirkanaa'a. Garuu yeroo tokko tokko hanga sa'aatii 24 fudhachuu danda'a.</p>
+            </div>
+
+            <div class="bg-[#161b2b]/80 backdrop-blur-xl p-5 md:p-6 rounded-[20px] md:rounded-[28px] border border-white/10 shadow-2xl card-3d">
+                <h3 class="text-sm md:text-base font-black mb-2 uppercase tracking-tight text-teal-400">Kitaaba buufachuu dadhabnaan maal gochuu qaba?</h3>
+                <p class="text-xs md:text-sm text-slate-400 font-medium">Deeggarsa keenya quunnamuun gargaarsa argachuu dandeessu. Telegram ykn Email keenyaan nu quunnamaa.</p>
+            </div>
+        </div>
+    </main>
+
+    <script>lucide.createIcons();</script>
+</body>
+</html>

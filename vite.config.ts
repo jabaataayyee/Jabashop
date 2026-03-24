@@ -1,0 +1,36 @@
+import tailwindcss from '@tailwindcss/vite';
+import react from '@vitejs/plugin-react';
+import path from 'path';
+import {defineConfig, loadEnv} from 'vite';
+
+export default defineConfig(({mode}) => {
+  const env = loadEnv(mode, '.', '');
+  return {
+    plugins: [react(), tailwindcss()],
+    define: {
+      'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),
+      'process.env.APP_URL': JSON.stringify(env.APP_URL),
+    },
+    resolve: {
+      alias: {
+        '@': path.resolve(__dirname, '.'),
+      },
+    },
+    build: {
+      rollupOptions: {
+        input: {
+          main: path.resolve(__dirname, 'index.html'),
+          login: path.resolve(__dirname, 'login.html'),
+          signup: path.resolve(__dirname, 'signup.html'),
+          dashboard: path.resolve(__dirname, 'dashboard.html'),
+          admin: path.resolve(__dirname, 'admin.html'),
+        },
+      },
+    },
+    server: {
+      port: 3000,
+      host: '0.0.0.0',
+      hmr: process.env.DISABLE_HMR !== 'true',
+    },
+  };
+});

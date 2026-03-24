@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Piroofayilii - Jabaa Shop</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-[#0a0b14] text-slate-50 selection:bg-teal-500/30">
+    <!-- Global Edge Glows -->
+    <div class="global-edge-glows">
+        <div class="edge-glow glow-tl"></div>
+        <div class="edge-glow glow-tr"></div>
+        <div class="edge-glow glow-bl"></div>
+        <div class="edge-glow glow-br"></div>
+        <div class="edge-particles"></div>
+        <div class="edge-waves"></div>
+        <div class="edge-scan-line"></div>
+    </div>
+    
+    <!-- Header -->
+    <header class="fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-white/5">
+        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2 cursor-pointer" onclick="window.location.href='index.html'">
+                <div class="w-10 h-10 bg-teal-500 rounded-xl flex items-center justify-center shadow-lg shadow-teal-500/20">
+                    <i data-lucide="shopping-bag" class="w-6 h-6 text-slate-950"></i>
+                </div>
+                <h1 class="text-xl font-bold text-white uppercase tracking-tight hidden sm:block">Jabaa Shop</h1>
+            </div>
+
+            <!-- Search Bar (Center) -->
+            <div class="flex-1 max-w-2xl px-8 hidden lg:block">
+                <div class="search-bar w-full">
+                    <i data-lucide="search" class="w-4 h-4 text-slate-400"></i>
+                    <input type="text" id="search-input" placeholder="Barbaadi..." class="font-medium">
+                </div>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <a href="index.html" class="text-xs font-bold uppercase tracking-wider text-slate-400 hover:text-white transition-colors" title="Mana">
+                    <i data-lucide="shopping-bag" class="w-5 h-5"></i>
+                </a>
+                <a href="dashboard.html" class="text-xs font-bold uppercase tracking-wider text-slate-400 hover:text-white transition-colors">Kitaabota Koo</a>
+                <a href="profile.html" class="text-xs font-bold uppercase tracking-wider text-slate-400 hover:text-white transition-colors">Piroofayilii</a>
+                <div class="h-6 w-px bg-white/10 mx-2"></div>
+                <button onclick="logout()" class="p-2 text-slate-400 hover:text-red-400 transition-colors" title="Logout">
+                    <i data-lucide="log-out" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="pt-24 pb-16 px-4 max-w-2xl mx-auto reveal active">
+        <div class="text-center mb-12 animate-fade-in-up">
+            <div class="relative w-28 h-28 mx-auto mb-6 group">
+                <div id="profile-pic-container" class="w-full h-full rounded-3xl bg-slate-800 flex items-center justify-center overflow-hidden border-2 border-white/10 shadow-xl neon-border">
+                    <img id="profile-pic-display" src="" class="w-full h-full object-cover hidden" referrerPolicy="no-referrer">
+                    <i id="profile-pic-placeholder" data-lucide="user" class="w-12 h-12 text-slate-600"></i>
+                </div>
+                <label for="avatar-upload" class="absolute -bottom-1 -right-1 w-9 h-9 bg-teal-500 rounded-xl flex items-center justify-center cursor-pointer shadow-xl border-2 border-slate-900 hover:scale-110 transition-transform z-10 neon-btn">
+                    <i data-lucide="camera" class="w-4 h-4 text-slate-950"></i>
+                    <input type="file" id="avatar-upload" class="hidden" accept="image/*">
+                </label>
+            </div>
+            <span class="text-teal-400 font-bold text-[9px] uppercase tracking-[0.3em] mb-2 block neon-text">Sajataa Herregaa</span>
+            <h2 class="text-2xl font-bold text-white uppercase mb-4 neon-text">Profile Keessan</h2>
+            <p class="text-xs text-slate-400 font-medium">Odeeffannoo herrega keessanii asitti gulaaluu dandeessu.</p>
+        </div>
+
+        <div class="space-y-6 animate-fade-in-up" style="animation-delay: 0.2s">
+            <div id="upload-status" class="hidden p-4 rounded-xl bg-teal-500/10 border border-teal-500/20 text-center mb-6">
+                <p class="text-teal-400 text-[10px] font-bold uppercase tracking-widest animate-pulse">Suuraan ol-fe'amaa jira...</p>
+            </div>
+
+            <!-- Email Update Section -->
+            <div class="card-glass-3d max-w-md mx-auto !p-6">
+                <div class="flex items-center gap-3 mb-5">
+                    <div class="w-8 h-8 rounded-lg bg-teal-500/10 flex items-center justify-center border border-teal-500/20">
+                        <i data-lucide="mail" class="w-4 h-4 text-teal-400"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-bold text-white uppercase tracking-widest">Email Gulaali</h3>
+                        <p class="text-[8px] font-bold uppercase tracking-wider text-slate-500 mt-0.5">Email keessan jijjiiruuf</p>
+                    </div>
+                </div>
+
+                <form id="email-form" class="space-y-4">
+                    <div class="space-y-1.5">
+                        <label class="text-[9px] font-bold uppercase tracking-widest text-slate-500 ml-1">Email Ammaa</label>
+                        <input type="email" id="current-email" class="input-glass-profile opacity-50 cursor-not-allowed" readonly>
+                    </div>
+                    <div class="space-y-1.5">
+                        <label class="text-[9px] font-bold uppercase tracking-widest text-teal-400 ml-1">Email Haaraa</label>
+                        <input type="email" id="new-email" class="input-glass-profile" placeholder="fakkeenya@gmail.com" required>
+                    </div>
+                    <button type="submit" id="email-btn" class="btn-primary w-full !h-10 !text-[9px]">Email Jijjiiri</button>
+                </form>
+            </div>
+
+            <!-- Password Update Section -->
+            <div class="card-glass-3d max-w-md mx-auto !p-6">
+                <div class="flex items-center gap-3 mb-5">
+                    <div class="w-8 h-8 rounded-lg bg-teal-500/10 flex items-center justify-center border border-teal-500/20">
+                        <i data-lucide="lock" class="w-4 h-4 text-teal-400"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-bold text-white uppercase tracking-widest">Jecha Iccitii</h3>
+                        <p class="text-[8px] font-bold uppercase tracking-wider text-slate-500 mt-0.5">Password keessan jijjiiruuf</p>
+                    </div>
+                </div>
+
+                <form id="password-form" class="space-y-4">
+                    <div class="space-y-1.5">
+                        <div class="flex items-center justify-between">
+                            <label class="text-[9px] font-bold uppercase tracking-widest text-teal-400 ml-1">Password Haaraa</label>
+                            <div class="group relative">
+                                <i data-lucide="info" class="w-3 h-3 text-slate-500 cursor-help"></i>
+                                <div class="absolute bottom-full right-0 mb-2 w-48 p-3 bg-slate-900 border border-white/10 rounded-xl shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-20">
+                                    <p class="text-[8px] font-bold uppercase tracking-widest text-teal-400 mb-2">Ulaagaalee Password:</p>
+                                    <ul class="space-y-1">
+                                        <li class="text-[7px] text-slate-400 flex items-center gap-2"><div class="w-1 h-1 rounded-full bg-teal-500"></div> Yoo xiqqaate 6</li>
+                                        <li class="text-[7px] text-slate-400 flex items-center gap-2"><div class="w-1 h-1 rounded-full bg-teal-500"></div> Guddicha & Xiqqaa</li>
+                                        <li class="text-[7px] text-slate-400 flex items-center gap-2"><div class="w-1 h-1 rounded-full bg-teal-500"></div> Lakkoofsa</li>
+                                        <li class="text-[7px] text-slate-400 flex items-center gap-2"><div class="w-1 h-1 rounded-full bg-teal-500"></div> Mallattoo addaa</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <input type="password" id="new-password" class="input-glass-profile pr-10" placeholder="••••••••" required minlength="6">
+                            <button type="button" id="toggle-password" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-teal-400 transition-colors">
+                                <i data-lucide="eye" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                        <div class="password-strength-meter">
+                            <div id="strength-bar" class="password-strength-bar"></div>
+                        </div>
+                        <div class="flex items-center justify-between mt-1.5">
+                            <p id="strength-text" class="text-[8px] font-bold uppercase tracking-widest text-slate-600">Guddinni Password</p>
+                            <p id="strength-percent" class="text-[8px] font-bold uppercase tracking-widest text-slate-600">0%</p>
+                        </div>
+                    </div>
+                    <div class="space-y-1.5">
+                        <label class="text-[9px] font-bold uppercase tracking-widest text-teal-400 ml-1">Password Mirkaneessi</label>
+                        <input type="password" id="confirm-password" class="input-glass-profile" placeholder="••••••••" required minlength="6">
+                    </div>
+                    <button type="submit" id="password-btn" class="btn-primary w-full !h-10 !text-[9px]">Password Jijjiiri</button>
+                </form>
+            </div>
+
+            <!-- Danger Zone -->
+            <div class="card-glass-3d max-w-md mx-auto !p-6 border-rose-500/10 bg-rose-500/[0.02]">
+                <div class="flex items-center gap-3 mb-5">
+                    <div class="w-8 h-8 rounded-lg bg-rose-500/10 flex items-center justify-center border border-rose-500/20">
+                        <i data-lucide="alert-triangle" class="w-4 h-4 text-rose-500"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-bold text-white uppercase tracking-widest">Danger Zone</h3>
+                        <p class="text-[8px] font-bold uppercase tracking-wider text-slate-500 mt-0.5">Akkaawuntii balleessuuf</p>
+                    </div>
+                </div>
+                <button onclick="confirmDeleteAccount()" class="w-full py-2.5 rounded-xl bg-rose-500/5 text-rose-500 text-[9px] font-bold uppercase tracking-widest border border-rose-500/10 hover:bg-rose-500/10 transition-all">Akkaawuntii Koo Balleessi</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Confirmation Modal -->
+    <div id="confirm-modal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 opacity-0 invisible transition-all duration-300">
+        <div class="absolute inset-0 bg-slate-950/80 backdrop-blur-sm" onclick="closeConfirmModal()"></div>
+        <div class="glass-card max-w-sm w-full p-8 relative z-10 animate-fade-in-up">
+            <div class="w-16 h-16 rounded-full bg-rose-500/10 flex items-center justify-center mx-auto mb-6 border border-rose-500/20">
+                <i data-lucide="alert-triangle" class="w-8 h-8 text-rose-500"></i>
+            </div>
+            <h3 class="text-lg font-bold text-white text-center uppercase tracking-widest mb-2">Mirkaneessaa</h3>
+            <p id="confirm-message" class="text-xs text-slate-400 text-center mb-8 leading-relaxed">Akkaawuntii keessan balleessuuf mirkaneessaa? Gochi kun duubatti hin deebi'u.</p>
+            <div class="flex gap-4">
+                <button onclick="closeConfirmModal()" class="flex-1 py-3 rounded-xl bg-white/5 text-white text-[10px] font-bold uppercase tracking-widest border border-white/5 hover:bg-white/10 transition-all">Haqi</button>
+                <button id="confirm-action-btn" class="flex-1 py-3 rounded-xl bg-rose-500 text-slate-950 text-[10px] font-bold uppercase tracking-widest hover:brightness-110 transition-all shadow-lg shadow-rose-500/20">Balleessi</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-slate-950 border-t border-white/5 py-12 px-6 mt-20">
+        <div class="max-w-7xl mx-auto text-center">
+            <p class="text-slate-500 text-[9px] font-medium uppercase tracking-wider">&copy; 2026 Jabaa Shop. Mirgi hunduu seeraan kan eegame dha.</p>
+        </div>
+    </footer>
+
+    <script type="module" src="app.js"></script>
+    <script type="module">
+        async function initProfile() {
+            const user = await checkSession();
+            if (user) {
+                document.getElementById('current-email').value = user.email;
+                
+                // Load profile picture from metadata
+                const avatarUrl = user.user_metadata?.avatar_url;
+                if (avatarUrl) {
+                    const display = document.getElementById('profile-pic-display');
+                    const placeholder = document.getElementById('profile-pic-placeholder');
+                    display.src = avatarUrl;
+                    display.classList.remove('hidden');
+                    placeholder.classList.add('hidden');
+                }
+
+                if (user.email === "admin@whyjaba.com") {
+                    const dashLinks = document.querySelectorAll('a[href="dashboard.html"]');
+                    dashLinks.forEach(link => {
+                        link.href = "admin.html";
+                        link.innerText = "Admin Panel";
+                    });
+                }
+            }
+            if (window.lucide) {
+                window.lucide.createIcons();
+            }
+        }
+
+        // Profile Picture Upload
+        document.getElementById('avatar-upload').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const status = document.getElementById('upload-status');
+            status.classList.remove('hidden');
+
+            try {
+                const { data: { user } } = await supabaseClient.auth.getUser();
+                if (!user) throw new Error("User not found");
+
+                const fileExt = file.name.split('.').pop();
+                const fileName = `${user.id}-${Math.random()}.${fileExt}`;
+                const filePath = `avatars/${fileName}`;
+
+                // Upload to Supabase Storage (using 'receipts' bucket if 'avatars' doesn't exist, 
+                // but let's try 'avatars' first as it's more appropriate)
+                const { error: uploadError } = await supabaseClient.storage
+                    .from('receipts') // Fallback to receipts bucket since we know it exists from dashboard.html
+                    .upload(filePath, file);
+
+                if (uploadError) throw uploadError;
+
+                const { data } = supabaseClient.storage.from('receipts').getPublicUrl(filePath);
+                const publicUrl = data.publicUrl;
+
+                // Update Auth Metadata
+                const { error: updateError } = await supabaseClient.auth.updateUser({
+                    data: { avatar_url: publicUrl }
+                });
+
+                if (updateError) throw updateError;
+
+                // Update UI
+                const display = document.getElementById('profile-pic-display');
+                const placeholder = document.getElementById('profile-pic-placeholder');
+                display.src = publicUrl;
+                display.classList.remove('hidden');
+                placeholder.classList.add('hidden');
+                
+                showToast('Suuraan profile milkaa\'inaan jijjiirameera!', 'success');
+            } catch (error) {
+                console.error("Upload error:", error);
+                showToast('Dogoggora ol-fe\'uu: ' + error.message, 'error');
+            } finally {
+                status.classList.add('hidden');
+            }
+        });
+
+        document.getElementById('email-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const newEmail = document.getElementById('new-email').value;
+            
+            setLoadingState('email-btn', true, 'JIJJIIRAMAA JIRA...');
+            
+            const { data, error } = await supabaseClient.auth.updateUser({ email: newEmail });
+            
+            if (error) {
+                showToast(error.message, 'error');
+                setLoadingState('email-btn', false);
+            } else {
+                showToast('Email jijjiirameera! Mirkaneessuuf email keessan ilaalaa.', 'success');
+                document.getElementById('new-email').value = '';
+                setLoadingState('email-btn', false);
+            }
+        });
+
+        document.getElementById('password-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            
+            if (newPassword !== confirmPassword) {
+                showToast('Password wal hin fudhatu!', 'error');
+                return;
+            }
+            
+            setLoadingState('password-btn', true, 'JIJJIIRAMAA JIRA...');
+            
+            const { data, error } = await supabaseClient.auth.updateUser({ password: newPassword });
+            
+            if (error) {
+                showToast(error.message, 'error');
+                setLoadingState('password-btn', false);
+            } else {
+                showToast('Password milkaa\'inaan jijjiirameera!', 'success');
+                document.getElementById('new-password').value = '';
+                document.getElementById('confirm-password').value = '';
+                setLoadingState('password-btn', false);
+            }
+        });
+
+        document.getElementById('new-password').addEventListener('input', (e) => {
+            const password = e.target.value;
+            const bar = document.getElementById('strength-bar');
+            const text = document.getElementById('strength-text');
+            const percent = document.getElementById('strength-percent');
+            
+            if (!password) {
+                bar.style.width = '0%';
+                text.innerText = 'Guddinni Password';
+                text.style.color = '#64748b';
+                percent.innerText = '0%';
+                return;
+            }
+
+            let strength = 0;
+            if (password.length >= 6) strength += 25;
+            if (password.match(/[a-z]/) && password.match(/[A-Z]/)) strength += 25;
+            if (password.match(/[0-9]/)) strength += 25;
+            if (password.match(/[^a-zA-Z0-9]/)) strength += 25;
+            
+            bar.style.width = strength + '%';
+            percent.innerText = strength + '%';
+            
+            if (strength <= 25) {
+                bar.style.backgroundColor = '#f43f5e';
+                bar.style.boxShadow = '0 0 15px rgba(244, 63, 94, 0.4)';
+                text.innerText = 'Laafaa dha';
+                text.style.color = '#f43f5e';
+            } else if (strength <= 50) {
+                bar.style.backgroundColor = '#f59e0b';
+                bar.style.boxShadow = '0 0 15px rgba(245, 158, 11, 0.4)';
+                text.innerText = 'Giddu-galeessa';
+                text.style.color = '#f59e0b';
+            } else if (strength <= 75) {
+                bar.style.backgroundColor = '#0ea5e9';
+                bar.style.boxShadow = '0 0 15px rgba(14, 165, 233, 0.4)';
+                text.innerText = 'Gaarii dha';
+                text.style.color = '#0ea5e9';
+            } else {
+                bar.style.backgroundColor = '#10b981';
+                bar.style.boxShadow = '0 0 15px rgba(16, 185, 129, 0.4)';
+                text.innerText = 'Cimmaa dha';
+                text.style.color = '#10b981';
+            }
+        });
+
+        document.getElementById('toggle-password').addEventListener('click', function() {
+            const input = document.getElementById('new-password');
+            const icon = this.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.setAttribute('data-lucide', 'eye-off');
+            } else {
+                input.type = 'password';
+                icon.setAttribute('data-lucide', 'eye');
+            }
+            if (window.lucide) window.lucide.createIcons();
+        });
+
+        let confirmAction = null;
+
+        function showConfirmModal(message, action) {
+            const modal = document.getElementById('confirm-modal');
+            const msgEl = document.getElementById('confirm-message');
+            const btn = document.getElementById('confirm-action-btn');
+            
+            msgEl.innerText = message;
+            confirmAction = action;
+            
+            modal.classList.remove('invisible', 'opacity-0');
+            modal.classList.add('visible', 'opacity-100');
+            
+            btn.onclick = async () => {
+                await confirmAction();
+                closeConfirmModal();
+            };
+        }
+
+        function closeConfirmModal() {
+            const modal = document.getElementById('confirm-modal');
+            modal.classList.add('invisible', 'opacity-0');
+            modal.classList.remove('visible', 'opacity-100');
+        }
+
+        window.closeConfirmModal = closeConfirmModal;
+
+        async function confirmDeleteAccount() {
+            showConfirmModal(
+                "Akkaawuntii keessan balleessuuf mirkaneessaa? Gochi kun duubatti hin deebi'u.",
+                async () => {
+                    try {
+                        showToast('Akkaawuntiin keessan balleeffamuuf adeemsa irra jira...', 'info');
+                        setTimeout(async () => {
+                            await supabaseClient.auth.signOut();
+                            window.location.href = 'index.html';
+                        }, 2000);
+                    } catch (error) {
+                        showToast(error.message, 'error');
+                    }
+                }
+            );
+        }
+
+        window.confirmDeleteAccount = confirmDeleteAccount;
+        initProfile();
+
+        // Search functionality
+        document.getElementById('search-input')?.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const term = e.target.value.trim();
+                if (term) {
+                    window.location.href = `index.html?q=${encodeURIComponent(term)}`;
+                }
+            }
+        });
+    </script>
+</body>
+</html>

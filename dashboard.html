@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daashboordii - Jabaa Shop</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+        
+        :root {
+            --bg-dark: #030407;
+            --accent-teal: #00d2b4;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text-light: #ffffff;
+            --font-sans: "Poppins", sans-serif;
+            --radius-xl: 24px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            font-family: var(--font-sans);
+            margin: 0;
+            overflow-x: hidden;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .glass-nav {
+            background: rgba(3, 4, 7, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+        }
+
+        .card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            transition: var(--transition);
+        }
+
+        .btn-primary {
+            background: var(--accent-teal);
+            color: #000;
+            font-weight: 700;
+            border: none;
+            border-radius: 12px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 11px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+
+        .btn-primary:hover {
+            filter: brightness(1.1);
+            box-shadow: 0 0 20px rgba(0, 210, 180, 0.3);
+        }
+
+        .tab-btn {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            padding: 8px 16px;
+            color: #94a3b8;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .tab-btn.active {
+            background: var(--accent-teal);
+            color: #000;
+            border-color: var(--accent-teal);
+        }
+
+        .input-glass {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: white;
+            font-size: 14px;
+            outline: none;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .input-glass:focus {
+            border-color: var(--accent-teal);
+        }
+
+        .status-pill {
+            font-size: 9px;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .status-pending { background: rgba(245, 158, 11, 0.1); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.2); }
+        .status-approved { background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2); }
+        .status-rejected { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); }
+
+        .floating-3d {
+            animation: float 4s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="selection:bg-[#00d2b4]/30">
+    <!-- Global Edge Glows -->
+    <div class="global-edge-glows">
+        <div class="edge-glow glow-tl"></div>
+        <div class="edge-glow glow-tr"></div>
+        <div class="edge-glow glow-bl"></div>
+        <div class="edge-glow glow-br"></div>
+        <div class="edge-particles"></div>
+        <div class="edge-waves"></div>
+        <div class="edge-scan-line"></div>
+    </div>
+    
+    <!-- Header -->
+    <header class="glass-nav">
+        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
+            <div class="flex items-center gap-2 cursor-pointer" onclick="window.location.href='index.html'">
+                <div class="w-8 h-8 bg-[#00d2b4] rounded-lg flex items-center justify-center shadow-lg shadow-[#00d2b4]/20 floating-3d depth-effect">
+                    <i data-lucide="shopping-bag" class="w-4 h-4 text-slate-950"></i>
+                </div>
+                <h1 class="text-xs font-bold text-white uppercase tracking-tight hidden sm:block">Jabaa Shop</h1>
+            </div>
+
+            <!-- Search Bar (Center) -->
+            <div class="flex-1 max-w-md hidden md:block">
+                <div class="bg-black/30 border border-white/5 rounded-xl px-4 py-2 flex items-center gap-3">
+                    <i data-lucide="search" class="w-3.5 h-3.5 text-slate-500"></i>
+                    <input type="text" id="search-input" placeholder="Barbaadi..." class="bg-transparent border-none outline-none text-[10px] text-white w-full">
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2 shrink-0">
+                <a href="index.html" class="w-8 h-8 flex items-center justify-center bg-white/5 rounded-lg hover:bg-white/10 transition-all border border-white/5" title="Mana">
+                    <i data-lucide="shopping-bag" class="w-4 h-4 text-slate-400"></i>
+                </a>
+                
+                <div id="user-links" class="flex items-center gap-2">
+                    <a href="profile.html" class="w-8 h-8 flex items-center justify-center bg-white/5 rounded-lg border border-white/5 overflow-hidden hover:border-[#00d2b4]/30 transition-all">
+                        <img id="nav-avatar-img" src="" class="w-full h-full object-cover hidden" referrerPolicy="no-referrer">
+                        <i id="nav-avatar-placeholder" data-lucide="user" class="w-4 h-4 text-slate-400"></i>
+                    </a>
+                </div>
+
+                <button class="w-8 h-8 flex items-center justify-center bg-white/5 rounded-lg border border-white/5 text-slate-400 hover:text-white transition-all hidden">
+                    <i data-lucide="menu" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="pt-24 px-4 pb-16 max-w-7xl mx-auto min-h-screen">
+        <div class="mb-10 animate-fade-in-up">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-xl bg-[#00d2b4] flex items-center justify-center shadow-lg shadow-[#00d2b4]/20 depth-effect">
+                        <i data-lucide="library" class="w-6 h-6 text-slate-950"></i>
+                    </div>
+                    <div>
+                        <span class="text-[#00d2b4] font-bold text-[8px] uppercase tracking-[0.3em] mb-1 block">Kitaabota Koo</span>
+                        <h2 class="text-lg font-bold text-white uppercase tracking-tight">Mana Kitaabaa</h2>
+                    </div>
+                </div>
+                <div class="flex gap-4">
+                    <div class="bg-white/[0.01] px-4 py-2 rounded-xl border border-white/5 flex items-center gap-3 backdrop-blur-sm">
+                        <div class="text-right">
+                            <p class="text-[7px] text-slate-600 uppercase tracking-widest font-bold mb-0.5">Miseensummaa</p>
+                            <p class="text-[9px] font-bold text-[#00d2b4] uppercase tracking-widest">Miseensa Hojjataa</p>
+                        </div>
+                        <div class="w-8 h-8 rounded-lg bg-[#00d2b4]/10 flex items-center justify-center text-[#00d2b4] border border-[#00d2b4]/10">
+                            <i data-lucide="shield-check" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Tabs -->
+        <div class="flex gap-2 mb-8 border-b border-white/5 pb-4 overflow-x-auto no-scrollbar">
+            <button onclick="switchTab('library')" id="tab-library" class="tab-btn active flex items-center gap-2 depth-effect">
+                <i data-lucide="book-marked" class="w-3.5 h-3.5 icon-tech"></i>
+                Kitaabota Koo
+            </button>
+            <button onclick="switchTab('shop')" id="tab-shop" class="tab-btn flex items-center gap-2 depth-effect">
+                <i data-lucide="shopping-bag" class="w-3.5 h-3.5 icon-business"></i>
+                Bitadhu
+            </button>
+            <button onclick="switchTab('transactions')" id="tab-transactions" class="tab-btn flex items-center gap-2 depth-effect">
+                <i data-lucide="history" class="w-3.5 h-3.5 icon-ai"></i>
+                Kaffaltiiwwan
+            </button>
+        </div>
+
+        <div id="library-view" class="dashboard-view active">
+            <div id="books-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
+                <!-- Books will be injected here -->
+            </div>
+        </div>
+
+        <div id="transactions-view" class="dashboard-view hidden">
+            <div class="bg-slate-900/50 border border-white/10 rounded-3xl overflow-hidden shadow-xl backdrop-blur-xl">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-white/5 bg-white/5">
+                                <th class="px-6 py-4 text-[9px] font-bold uppercase tracking-wider text-slate-500">Kitaaba</th>
+                                <th class="px-6 py-4 text-[9px] font-bold uppercase tracking-wider text-slate-500">Guyyaa</th>
+                                <th class="px-6 py-4 text-[9px] font-bold uppercase tracking-wider text-slate-500">Gatii</th>
+                                <th class="px-6 py-4 text-[9px] font-bold uppercase tracking-wider text-slate-500">Haala</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactions-body">
+                            <!-- Transactions will be injected here -->
+                        </tbody>
+                    </table>
+                </div>
+                <div id="transactions-empty" class="hidden py-16 text-center">
+                    <div class="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center mx-auto mb-4 border border-white/10">
+                        <i data-lucide="history" class="w-6 h-6 text-slate-600"></i>
+                    </div>
+                    <p class="text-slate-500 font-bold uppercase tracking-wider text-[9px]">Kaffaltiin hin argamne</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Preview Modal -->
+        <div id="preview-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md hidden z-[100] flex items-center justify-center p-4">
+            <div class="bg-slate-900 p-6 md:p-8 w-full max-w-3xl rounded-2xl shadow-2xl relative overflow-y-auto max-h-[90vh] animate-fade-in border border-white/10">
+                <div class="flex justify-between items-start mb-6">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-lg bg-teal-500/10 flex items-center justify-center border border-teal-500/20">
+                            <i data-lucide="book-open" class="w-4 h-4 text-teal-400"></i>
+                        </div>
+                        <h3 id="preview-title" class="text-lg md:text-xl font-bold tracking-tight text-white uppercase"></h3>
+                    </div>
+                    <button onclick="closePreviewModal()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-all border border-white/10">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+                    <div class="relative">
+                        <img id="preview-image" src="" class="w-full aspect-[3/4] object-cover rounded-2xl shadow-xl border border-white/10" referrerPolicy="no-referrer">
+                    </div>
+                    <div class="flex flex-col justify-between">
+                        <div class="space-y-6">
+                            <div class="space-y-2">
+                                <span class="text-[9px] uppercase tracking-wider text-teal-400 font-bold block">Ibsa Kitaabaa</span>
+                                <p id="preview-description" class="text-slate-400 text-xs leading-relaxed font-medium"></p>
+                            </div>
+                            <div class="space-y-1">
+                                <span class="text-[9px] uppercase tracking-wider text-teal-400 font-bold block">Gatii</span>
+                                <p id="preview-price" class="text-2xl font-bold text-white tracking-tight"></p>
+                            </div>
+                        </div>
+                        <div id="preview-action-container" class="pt-8">
+                            <!-- Preview PDF button will be here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment Modal -->
+        <div id="payment-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md hidden z-[100] overflow-y-auto p-4">
+            <div class="flex min-h-full items-center justify-center">
+                <div class="bg-slate-900 p-6 md:p-8 w-full max-w-lg rounded-2xl shadow-2xl relative overflow-hidden animate-fade-in border border-white/10 my-8">
+                    <div class="flex items-center gap-3 mb-8">
+                        <div class="w-10 h-10 rounded-lg bg-teal-500 flex items-center justify-center shadow-lg shadow-teal-500/20">
+                            <i data-lucide="credit-card" class="w-5 h-5 text-slate-950"></i>
+                        </div>
+                        <h3 class="text-xl font-bold tracking-tight text-white uppercase">Biticha Xumuri</h3>
+                    </div>
+                    
+                    <div class="space-y-6 mb-10">
+                        <div class="p-4 rounded-xl bg-teal-500/5 border border-teal-500/20">
+                            <p class="text-teal-400 text-xs leading-relaxed flex items-center gap-3 font-semibold">
+                                <i data-lucide="info" class="w-5 h-5"></i>
+                                Hamma kaffaltii herrega armaan gadii keessaa tokkotti dabarshaa:
+                            </p>
+                        </div>
+                        
+                        <div class="bg-white/5 p-6 rounded-2xl border border-white/10 space-y-4">
+                            <div class="flex justify-between items-start">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center border border-white/10">
+                                        <i data-lucide="smartphone" class="w-5 h-5 text-teal-400"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-[9px] uppercase tracking-wider text-slate-500 font-bold mb-0.5">Bankii</p>
+                                        <p class="font-bold text-white text-base uppercase tracking-tight">Telebirr</p>
+                                    </div>
+                                </div>
+                                <button onclick="copyText('0963945956')" class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 hover:bg-teal-500 text-slate-400 hover:text-white transition-all border border-white/10">
+                                    <i data-lucide="copy" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                            <p class="text-2xl font-mono font-bold text-teal-400 tracking-wider">0963945956</p>
+                            <p class="text-[10px] text-slate-500 uppercase tracking-wider font-bold pt-2 border-t border-white/5">Geda Taye</p>
+                        </div>
+
+                        <div class="bg-white/5 p-6 rounded-2xl border border-white/10 space-y-4">
+                            <div class="flex justify-between items-start">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center border border-white/10">
+                                        <i data-lucide="landmark" class="w-5 h-5 text-teal-400"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-[9px] uppercase tracking-wider text-slate-500 font-bold mb-0.5">Bankii</p>
+                                        <p class="font-bold text-white text-base uppercase tracking-tight">Awash Bank</p>
+                                    </div>
+                                </div>
+                                <button onclick="copyText('013201510903900')" class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 hover:bg-teal-500 text-slate-400 hover:text-white transition-all border border-white/10">
+                                    <i data-lucide="copy" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                            <p class="text-2xl font-mono font-bold text-teal-400 tracking-wider">013201510903900</p>
+                            <p class="text-[10px] text-slate-500 uppercase tracking-wider font-bold pt-2 border-t border-white/5">Geda Taye</p>
+                        </div>
+
+                        <div id="payment-preview-container" class="text-center">
+                            <!-- Preview button will be injected here -->
+                        </div>
+                    </div>
+                    
+                    <form id="receipt-form" class="space-y-6">
+                        <input type="hidden" id="selected-book-id">
+                        <div class="space-y-3">
+                            <label class="text-[9px] font-bold uppercase tracking-wider text-white flex items-center gap-2">
+                                <i data-lucide="upload" class="w-3.5 h-3.5 text-teal-400"></i>
+                                Ragaa Kaffaltii (Screenshot)
+                            </label>
+                            <div class="relative group">
+                                <input type="file" id="receipt-file" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" required>
+                                <div class="bg-white/5 flex flex-col items-center justify-center gap-3 py-6 border-2 border-dashed border-white/10 group-hover:border-teal-500 transition-all rounded-xl">
+                                    <div class="w-10 h-10 rounded-lg bg-teal-500/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                        <i data-lucide="image" class="w-5 h-5 text-teal-400"></i>
+                                    </div>
+                                    <div class="text-center px-4">
+                                        <p class="text-xs font-bold text-white uppercase tracking-tight">Ragaa Kaffaltii Ol-fe'i</p>
+                                        <p class="text-[9px] text-slate-500 uppercase tracking-wider mt-1 font-bold">Suuraa kaffaltii filadhu</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex gap-3 pt-2">
+                            <button type="button" onclick="closePaymentModal()" class="btn-secondary flex-1 !py-3">Haqi</button>
+                            <button type="submit" id="receipt-submit-btn" class="btn-primary flex-1 !py-3">Ergi</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-slate-950 border-t border-white/5 py-12 px-6 mt-20">
+        <div class="max-w-7xl mx-auto text-center">
+            <p class="text-slate-500 text-[9px] font-medium uppercase tracking-wider">&copy; 2026 Jabaa Shop. Mirgi hunduu seeraan kan eegame dha.</p>
+        </div>
+    </footer>
+    <script type="module" src="app.js"></script>
+    <script type="module">
+        let currentUser = null;
+        let currentTab = 'library';
+        let supabaseClient = null;
+
+        async function init() {
+            // Wait for supabaseClient
+            let retries = 0;
+            while (!window.supabaseClient && retries < 10) {
+                await new Promise(resolve => setTimeout(resolve, 100));
+                retries++;
+            }
+            if (!window.supabaseClient) {
+                console.error('supabaseClient not found');
+                return;
+            }
+            supabaseClient = window.supabaseClient;
+            console.log('init called, supabaseClient initialized');
+            if (window.lucide) window.lucide.createIcons();
+            const urlParams = new URLSearchParams(window.location.search);
+            const tabParam = urlParams.get('tab');
+            
+            const { data: { user } } = await window.supabaseClient.auth.getUser();
+            if (!user) {
+                window.location.href = "login.html";
+                return;
+            }
+            currentUser = user;
+            const userEmailEl = document.getElementById('user-email');
+            if (userEmailEl) userEmailEl.innerText = currentUser.email;
+            
+            // Load avatar
+            const avatarUrl = user.user_metadata?.avatar_url;
+            if (avatarUrl) {
+                const navImg = document.getElementById('nav-avatar-img');
+                const navPlaceholder = document.getElementById('nav-avatar-placeholder');
+                if (navImg && navPlaceholder) {
+                    navImg.src = avatarUrl;
+                    navImg.classList.remove('hidden');
+                    navPlaceholder.classList.add('hidden');
+                }
+            }
+
+            if (tabParam === 'transactions') {
+                switchTab('transactions');
+            } else if (tabParam === 'shop') {
+                switchTab('shop');
+            } else {
+                switchTab('library');
+            }
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            
+            // Update UI
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active', 'bg-teal-500', 'text-slate-950');
+                btn.classList.add('bg-white/5', 'text-slate-400');
+            });
+            const activeTabBtn = document.getElementById(`tab-${tab}`);
+            if (activeTabBtn) {
+                activeTabBtn.classList.add('active', 'bg-teal-500', 'text-slate-950');
+                activeTabBtn.classList.remove('bg-white/5', 'text-slate-400');
+            }
+            if (window.lucide) window.lucide.createIcons();
+
+            // Show/Hide views
+            document.querySelectorAll('.dashboard-view').forEach(view => {
+                view.classList.add('hidden');
+                view.classList.remove('active');
+            });
+            
+            if (tab === 'transactions') {
+                document.getElementById('transactions-view').classList.remove('hidden');
+                document.getElementById('transactions-view').classList.add('active');
+                loadTransactions();
+            } else {
+                document.getElementById('library-view').classList.remove('hidden');
+                document.getElementById('library-view').classList.add('active');
+                loadBooks();
+            }
+        }
+
+        async function loadTransactions() {
+            const tbody = document.getElementById('transactions-body');
+            const emptyState = document.getElementById('transactions-empty');
+            tbody.innerHTML = '<tr><td colspan="4" class="px-8 py-20 text-center"><div class="animate-pulse text-teal-400 font-bold uppercase tracking-widest text-[9px]">Kaffaltiiwwan fidaa jira...</div></td></tr>';
+            emptyState.classList.add('hidden');
+
+            const { data: receipts, error } = await window.supabaseClient
+                .from('receipts')
+                .select('*, books(title, price)')
+                .eq('user_id', currentUser.id)
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                tbody.innerHTML = `<tr><td colspan="4" class="px-8 py-10 text-center text-red-400 font-bold uppercase text-[10px]">${error.message}</td></tr>`;
+                return;
+            }
+
+            if (!receipts || receipts.length === 0) {
+                tbody.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            tbody.innerHTML = '';
+            receipts.forEach(receipt => {
+                const date = new Date(receipt.created_at).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                });
+
+                let statusClass = 'bg-amber-500/10 text-amber-500 border-amber-500/20';
+                if (receipt.status === 'approved') statusClass = 'bg-teal-500/10 text-teal-500 border-teal-500/20';
+                if (receipt.status === 'declined' || receipt.status === 'rejected') statusClass = 'bg-red-500/10 text-red-500 border-red-500/20';
+
+                const statusMap = {
+                    'pending': 'Eeggamaa',
+                    'approved': 'Mirkanaa\'e',
+                    'declined': 'Kufaa',
+                    'rejected': 'Kufaa'
+                };
+                const displayStatus = statusMap[receipt.status] || receipt.status;
+
+                tbody.innerHTML += `
+                    <tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
+                        <td class="px-6 py-4">
+                            <p class="text-white font-bold text-xs uppercase tracking-tight">${receipt.books?.title || 'Kitaaba Hin Beekamne'}</p>
+                            <p class="text-[8px] text-slate-500 uppercase tracking-widest mt-1 font-bold">ID: ${receipt.id.slice(0, 8)}</p>
+                        </td>
+                        <td class="px-6 py-4 text-slate-400 text-[10px] font-bold uppercase tracking-wider">${date}</td>
+                        <td class="px-6 py-4 text-white font-bold text-xs">${receipt.books?.price || 0} ETB</td>
+                        <td class="px-6 py-4">
+                            <span class="px-3 py-1 rounded-lg border text-[8px] font-bold uppercase tracking-widest ${statusClass}">
+                                ${displayStatus}
+                            </span>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            if (window.lucide) window.lucide.createIcons();
+        }
+
+        function copyText(text) {
+            navigator.clipboard.writeText(text);
+            showToast('Koodiin garagalfameera!');
+        }
+
+        // Search functionality
+        document.getElementById('search-input')?.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            loadBooks(term);
+        });
+
+        async function loadBooks(searchTerm = '') {
+            console.log('loadBooks called, currentTab:', currentTab);
+            const grid = document.getElementById('books-grid');
+            if (!searchTerm) {
+                showSkeleton('books-grid', 8, 'card');
+            }
+            
+            const { data: books, error: booksError } = await window.supabaseClient.from('books').select('*');
+            if (!currentUser) {
+                console.error('currentUser is null');
+                return;
+            }
+            const { data: receipts, error: receiptsError } = await window.supabaseClient.from('receipts').select('*').eq('user_id', currentUser.id);
+            
+            console.log('Books:', books, 'BooksError:', booksError);
+            console.log('Receipts:', receipts, 'ReceiptsError:', receiptsError);
+            
+            if (booksError) {
+                console.error('Books Error:', booksError);
+                grid.innerHTML = `<div class="col-span-full text-center py-20 text-red-400 font-bold uppercase text-[10px]">Dogoggora: ${booksError.message}</div>`;
+                return;
+            }
+            if (receiptsError) {
+                console.error('Receipts Error:', receiptsError);
+            }
+
+            const safeReceipts = receipts || [];
+
+            grid.innerHTML = '';
+            console.log('Books length:', books?.length);
+            console.log('Receipts length:', safeReceipts.length);
+
+            // Filter books based on tab and search term
+            let filteredBooks = books || [];
+            if (currentTab === 'library') {
+                filteredBooks = filteredBooks.filter(book => {
+                    const receipt = safeReceipts.find(r => r.book_id === book.id);
+                    return receipt && receipt.status === 'approved';
+                });
+            } else if (currentTab === 'shop') {
+                filteredBooks = filteredBooks.filter(book => {
+                    const receipt = safeReceipts.find(r => r.book_id === book.id);
+                    return !receipt || receipt.status !== 'approved';
+                });
+            }
+
+            if (searchTerm) {
+                filteredBooks = filteredBooks.filter(book => 
+                    book.title.toLowerCase().includes(searchTerm) || 
+                    (book.description && book.description.toLowerCase().includes(searchTerm))
+                );
+            }
+
+            if (filteredBooks.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full py-20 text-center">
+                        <div class="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center mx-auto mb-4 border border-white/10">
+                            <i data-lucide="book-x" class="w-6 h-6 text-slate-600"></i>
+                        </div>
+                        <p class="text-slate-500 font-bold uppercase tracking-widest text-[10px]">Kitaabni hin argamne</p>
+                    </div>
+                `;
+                if (window.lucide) window.lucide.createIcons();
+                return;
+            }
+
+            filteredBooks.forEach((book, index) => {
+                const receipt = safeReceipts.find(r => r.book_id === book.id);
+                
+                let actionButton = `
+                    <button id="buy-btn-${book.id}" onclick="openPaymentModal('${book.id}')" class="btn-primary flex-1 !py-2.5 text-[8px] uppercase tracking-widest font-bold">
+                        Amma Bitadhu
+                    </button>`;
+                
+                let statusBadge = '';
+
+                if (receipt) {
+                    if (receipt.status === 'approved') {
+                        statusBadge = `<span class="absolute top-2 left-2 z-20 bg-teal-500 text-slate-950 text-[7px] font-bold px-1.5 py-0.5 rounded-md uppercase tracking-wider shadow-lg">Kan Koo</span>`;
+                        actionButton = `
+                            <a href="${book.pdf_url}" target="_blank" class="btn-primary flex-1 !py-2.5 text-[8px] uppercase tracking-widest font-bold flex items-center justify-center gap-1.5">
+                                <i data-lucide="download" class="w-3 h-3"></i>
+                                Buufadhu
+                            </a>`;
+                    } else if (receipt.status === 'pending') {
+                        statusBadge = `<span class="absolute top-2 left-2 z-20 bg-amber-500 text-slate-950 text-[7px] font-bold px-1.5 py-0.5 rounded-md uppercase tracking-wider shadow-lg">Eeggamaa</span>`;
+                        actionButton = `
+                            <button disabled class="flex-1 bg-slate-800 text-slate-500 py-2.5 rounded-lg text-[8px] font-bold uppercase tracking-widest cursor-not-allowed flex items-center justify-center gap-1.5">
+                                <i data-lucide="clock" class="w-3 h-3"></i>
+                                Eeggamaa
+                            </button>`;
+                    } else if (receipt.status === 'declined' || receipt.status === 'rejected') {
+                        statusBadge = `<span class="absolute top-2 left-2 z-20 bg-red-500 text-white text-[7px] font-bold px-1.5 py-0.5 rounded-md uppercase tracking-wider shadow-lg">Kufaa</span>`;
+                        actionButton = `
+                            <button onclick="openPaymentModal('${book.id}')" class="btn-primary flex-1 !py-2.5 text-[8px] uppercase tracking-widest font-bold">
+                                Irra Deebi'i
+                            </button>`;
+                    }
+                }
+
+                grid.innerHTML += `
+                    <div class="bg-slate-900/50 border border-white/10 rounded-2xl overflow-hidden hover:border-teal-500/50 transition-all duration-300 shadow-xl group animate-fade-in-up" style="animation-delay: ${index * 50}ms">
+                        <div class="relative aspect-[3/4] overflow-hidden">
+                            ${statusBadge}
+                            <img src="${book.cover_url}" alt="${book.title}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" referrerPolicy="no-referrer">
+                            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-60"></div>
+                            <div class="absolute top-3 right-3 z-10">
+                                <span class="px-2 py-1 rounded-lg bg-slate-900/80 backdrop-blur-md border border-white/10 text-[9px] font-bold tracking-widest text-teal-400">
+                                    ${book.price} ETB
+                                </span>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <h4 class="text-xs font-bold text-white uppercase tracking-tight truncate mb-1">${book.title}</h4>
+                            <p class="text-[8px] text-slate-500 uppercase tracking-wider font-bold mb-4 line-clamp-1">${book.description || 'Kitaaba Diijitaalaa'}</p>
+                            <div class="flex gap-2">
+                                <button onclick="openPreviewModal('${book.id}')" class="flex-1 bg-white/5 hover:bg-white/10 border border-white/10 text-white py-2.5 rounded-lg text-[8px] font-bold uppercase tracking-widest transition-all">
+                                    Ibsa
+                                </button>
+                                ${actionButton}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            if (window.lucide) window.lucide.createIcons();
+        }
+
+        async function openPaymentModal(bookId) {
+            console.log(`[Dashboard] Button clicked: openPaymentModal(${bookId})`);
+            const buyBtn = document.getElementById(`buy-btn-${bookId}`);
+            if (buyBtn) {
+                buyBtn.innerHTML = '...';
+                buyBtn.disabled = true;
+            }
+
+            document.getElementById('selected-book-id').value = bookId;
+            
+            // Get book details for preview link
+            try {
+                console.log(`[Dashboard] Fetch start: fetching book ${bookId} for payment modal`);
+                const { data: book, error } = await window.supabaseClient.from('books').select('*').eq('id', bookId).single();
+                if (error) throw error;
+                console.log(`[Dashboard] Fetch success: fetched book ${bookId}`, book);
+
+                const previewContainer = document.getElementById('payment-preview-container');
+                
+                if (buyBtn) {
+                    buyBtn.innerHTML = 'Amma Bitadhu';
+                    buyBtn.disabled = false;
+                }
+
+                if (book && book.preview_url) {
+                    previewContainer.innerHTML = `
+                        <button onclick="window.open('${book.preview_url}', '_blank')" class="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-teal-500/5 border border-teal-500/20 text-[9px] uppercase tracking-widest text-teal-400 hover:bg-teal-500 hover:text-slate-950 transition-all font-bold">
+                            <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
+                            Dura-ilaalchi Bilisaa
+                        </button>
+                    `;
+                } else {
+                    previewContainer.innerHTML = '';
+                }
+                
+                document.getElementById('payment-modal').classList.remove('hidden');
+                if (window.lucide) window.lucide.createIcons();
+            } catch (error) {
+                console.error('Error fetching book:', error);
+                if (buyBtn) {
+                    buyBtn.innerHTML = 'Amma Bitadhu';
+                    buyBtn.disabled = false;
+                }
+                showToast('Dogoggora kitaaba fiduu: ' + error.message, 'error');
+            }
+        }
+
+        async function openPreviewModal(bookId) {
+            console.log(`[Dashboard] Button clicked: openPreviewModal(${bookId})`);
+            console.log(`[Dashboard] Fetch start: fetching book ${bookId} for preview`);
+            const { data: book, error } = await window.supabaseClient.from('books').select('*').eq('id', bookId).single();
+            if (error) {
+                console.error(`[Dashboard] Fetch error:`, error);
+                showToast('Dogoggora kitaaba fiduu: ' + error.message, 'error');
+                return;
+            }
+            console.log(`[Dashboard] Fetch success: fetched book ${bookId} for preview`, book);
+            if (book.preview_url) {
+                window.open(book.preview_url, '_blank');
+            } else {
+                document.getElementById('preview-title').innerText = book.title;
+                document.getElementById('preview-description').innerText = book.description || 'Ibsi hin jiru.';
+                document.getElementById('preview-image').src = book.cover_url;
+                document.getElementById('preview-price').innerText = book.price + ' ETB';
+                document.getElementById('preview-action-container').innerHTML = `
+                    <div class="p-6 rounded-2xl bg-white/5 border border-white/10 text-center">
+                        <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest flex items-center justify-center gap-2">
+                            <i data-lucide="info" class="w-4 h-4 text-teal-400"></i>
+                            Dura-ilaalchi PDF hin jiru.
+                        </p>
+                    </div>
+                `;
+                document.getElementById('preview-modal').classList.remove('hidden');
+                if (window.lucide) window.lucide.createIcons();
+            }
+        }
+
+        function closePreviewModal() {
+            document.getElementById('preview-modal').classList.add('hidden');
+        }
+
+        function closePaymentModal() {
+            document.getElementById('payment-modal').classList.add('hidden');
+            document.getElementById('receipt-form').reset();
+        }
+
+        document.getElementById('receipt-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const bookId = document.getElementById('selected-book-id').value;
+            const file = document.getElementById('receipt-file').files[0];
+            
+            if (!file) return;
+
+            setLoadingState('receipt-submit-btn', true, 'ERGAMAA JIRA...');
+            
+            const filePath = `${Date.now()}_${file.name}`;
+
+            const { error: uploadError } = await window.supabaseClient.storage
+                .from('receipts')
+                .upload(filePath, file);
+
+            if (uploadError) {
+                console.error("Upload error (receipts):", uploadError.message);
+                setLoadingState('receipt-submit-btn', false);
+                showToast('Ol-fe\'uun hin danda\'amne: ' + uploadError.message, 'error');
+                return;
+            }
+
+            const { data } = window.supabaseClient.storage.from('receipts').getPublicUrl(filePath);
+            const publicUrl = data.publicUrl;
+
+            const { error: dbError } = await window.supabaseClient.from('receipts').upsert({
+                user_id: currentUser.id,
+                book_id: bookId,
+                receipt_url: publicUrl,
+                status: 'pending'
+            }, { onConflict: 'user_id,book_id' });
+
+            if (dbError) {
+                showToast('Dogoggora Database: ' + dbError.message, 'error');
+                setLoadingState('receipt-submit-btn', false);
+            } else {
+                showToast('Ragaan kaffaltii milkaa\'inaan ergameera!');
+                closePaymentModal();
+                setLoadingState('receipt-submit-btn', false);
+                loadBooks();
+            }
+        });
+
+        window.switchTab = switchTab;
+        window.openPaymentModal = openPaymentModal;
+        window.closePaymentModal = closePaymentModal;
+        window.openPreviewModal = openPreviewModal;
+        window.closePreviewModal = closePreviewModal;
+        window.copyText = copyText;
+        window.loadBooks = loadBooks;
+        window.loadTransactions = loadTransactions;
+
+        init();
+    </script>
+</body>
+</html>

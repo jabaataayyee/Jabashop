@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dabalami - Jabaa Shop</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+        
+        :root {
+            --bg-dark: #030407;
+            --accent-teal: #00d2b4;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-light: #ffffff;
+            --font-sans: "Poppins", sans-serif;
+            --shadow-3d: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            font-family: var(--font-sans);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 380px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .card-glass-3d {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: var(--shadow-3d);
+            transition: transform 0.3s ease;
+        }
+
+        .card-glass-3d:hover {
+            transform: translateY(-5px);
+        }
+
+        .input-glass {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: white;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s;
+            box-sizing: border-box;
+        }
+
+        .input-glass:focus {
+            border-color: var(--accent-teal);
+        }
+
+        .btn-primary {
+            background: var(--accent-teal);
+            color: #000;
+            font-weight: 700;
+            border: none;
+            border-radius: 12px;
+            padding: 14px;
+            width: 100%;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 13px;
+        }
+
+        .btn-primary:hover {
+            filter: brightness(1.1);
+            box-shadow: 0 0 20px rgba(0, 210, 180, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 12px;
+            width: 100%;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+            box-sizing: border-box;
+        }
+
+        .floating-3d {
+            animation: float 4s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .text-dim { color: #94a3b8; font-size: 12px; }
+        .text-teal { color: var(--accent-teal); }
+        .uppercase { text-transform: uppercase; }
+        .tracking-widest { letter-spacing: 0.1em; }
+        .font-bold { font-weight: 700; }
+    </style>
+</head>
+<body class="selection:bg-teal-500/30">
+    <!-- Global Edge Glows -->
+    <div class="global-edge-glows">
+        <div class="edge-glow glow-tl"></div>
+        <div class="edge-glow glow-tr"></div>
+        <div class="edge-glow glow-bl"></div>
+        <div class="edge-glow glow-br"></div>
+        <div class="edge-particles"></div>
+        <div class="edge-waves"></div>
+        <div class="edge-scan-line"></div>
+    </div>
+    <div class="login-container animate-fade-in-up reveal active premium-glass p-8 rounded-2xl relative overflow-hidden">
+        <div class="premium-glass-shine"></div>
+        <div class="text-center mb-10 relative z-50" style="transform: translateZ(10px);">
+            <a href="index.html" style="text-decoration: none;" class="inline-flex flex-col items-center gap-4 group">
+                <div class="w-14 h-14 bg-[#00d2b4] rounded-2xl flex items-center justify-center shadow-2xl shadow-[#00d2b4]/20 transition-transform group-hover:scale-105 floating-3d" style="display: flex; align-items: center; justify-content: center; width: 56px; height: 56px; margin: 0 auto;">
+                    <i data-lucide="shopping-bag" style="width: 28px; height: 28px; color: #000;"></i>
+                </div>
+                <div style="margin-top: 10px;">
+                    <h1 style="margin: 0; font-size: 18px; color: white;" class="uppercase font-bold tracking-tight">Jabaa Shop</h1>
+                    <p style="margin: 0; font-size: 8px; color: #64748b;" class="uppercase font-bold tracking-widest">Premium Digital Store</p>
+                </div>
+            </a>
+        </div>
+
+        <div class="card-glass-3d glass-card relative z-50" style="transform: translateZ(10px);">
+            <div style="text-center; margin-bottom: 30px; text-align: center;">
+                <h2 style="margin: 0; font-size: 14px; color: white;" class="uppercase font-bold tracking-widest neon-text">DABALAMI</h2>
+                <p style="margin: 5px 0 0; font-size: 9px; color: #64748b;" class="uppercase font-bold tracking-widest">Miseensa ta'uuf galmaa'aa</p>
+            </div>
+
+            <form id="signup-form" style="display: flex; flex-direction: column; gap: 20px;">
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <label style="font-size: 9px; color: #94a3b8;" class="uppercase font-bold tracking-widest">Maqaa Guutuu</label>
+                    <div style="position: relative;">
+                        <input type="text" id="full_name" class="input-glass" placeholder="Maqaa keessan barreessaa" required>
+                    </div>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <label style="font-size: 9px; color: #94a3b8;" class="uppercase font-bold tracking-widest">Imeelii</label>
+                    <div style="position: relative;">
+                        <input type="email" id="email" class="input-glass" placeholder="fakkeenya@gmail.com" required>
+                    </div>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <label style="font-size: 9px; color: #94a3b8;" class="uppercase font-bold tracking-widest">Jecha Icchitii</label>
+                    <div style="position: relative;">
+                        <input type="password" id="password" class="input-glass" placeholder="••••••••" required>
+                    </div>
+                </div>
+                <button type="submit" id="signup-btn" class="btn-primary">Akkaawuntii Banadhu</button>
+            </form>
+
+            <div style="margin-top: 30px; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.05); text-align: center;">
+                <p style="font-size: 9px; color: #64748b; margin-bottom: 15px;" class="uppercase font-bold tracking-widest">Duraan miseensaa?</p>
+                <a href="login.html" class="btn-secondary uppercase tracking-widest">Gara Seensaatti Deebi'i</a>
+            </div>
+        </div>
+
+        <div style="margin-top: 30px; text-align: center;">
+            <a href="index.html" style="text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-size: 9px; color: #64748b;" class="uppercase font-bold tracking-widest">
+                <i data-lucide="arrow-left" style="width: 12px; height: 12px;"></i>
+                Gara Manaatti
+            </a>
+        </div>
+    </div>
+
+    <!-- Floating Icons -->
+    <div class="hidden lg:block absolute top-20 right-20 animate-float opacity-5">
+        <i data-lucide="sparkles" class="w-32 h-32 text-teal-400"></i>
+    </div>
+    <div class="hidden lg:block absolute bottom-20 left-20 animate-float opacity-5" style="animation-delay: 1s">
+        <i data-lucide="rocket" class="w-32 h-32 text-blue-400"></i>
+    </div>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="style.css">
+    <script type="module" src="app.js"></script>
+    <script type="module">
+        lucide.createIcons();
+
+        document.getElementById('signup-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const fullName = document.getElementById('full_name').value;
+
+            setLoadingState('signup-btn', true, 'GALMEESSAA JIRA...');
+
+            const { data, error } = await supabaseClient.auth.signUp({
+                email: email,
+                password: password,
+                options: {
+                    data: {
+                        full_name: fullName
+                    },
+                    emailRedirectTo: getRedirectUrl("dashboard.html")
+                }
+            });
+
+            if (error) {
+                showToast(error.message, 'error');
+                setLoadingState('signup-btn', false);
+            } else {
+                showToast("Galmeessi milkaa'eera! Gara daashboordiitti...");
+                window.location.href = "dashboard.html";
+            }
+        });
+    </script>
+</body>
+</html>
